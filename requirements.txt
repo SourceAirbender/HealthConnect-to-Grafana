@@ -1,0 +1,5 @@
+pandas
+openpyxl
+psycopg2-binary
+postgresql-client
+pgloader

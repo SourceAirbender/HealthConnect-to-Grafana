@@ -12,7 +12,6 @@ env/
 
 # Environment files (secrets)
 .env
-.env.*
 
 # Build / packaging
 build/
