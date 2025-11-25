@@ -1,0 +1,36 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+.envrc
+
+# Environment files (secrets)
+.env
+.env.*
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# SQLite / DB exports
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+full_import_log.txt
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
