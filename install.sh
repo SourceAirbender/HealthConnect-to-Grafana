@@ -18,8 +18,6 @@ set -a
 source .env
 set +a
 
-# ----- Derived/default settings for service + timer -----
-
 PROJECT_ROOT="${PROJECT_ROOT:-$SCRIPT_DIR}"
 VENV_DIR="${VENV_DIR:-$PROJECT_ROOT/venv}"
 IMPORTER_SCRIPT="${IMPORTER_SCRIPT:-$PROJECT_ROOT/health_data_importer.py}"
@@ -49,8 +47,6 @@ echo "  SERVICE_LOG_FILE = $SERVICE_LOG_FILE"
 echo "  ONCALENDAR       = $ONCALENDAR"
 echo
 
-# ----- Sanity checks -----
-
 if [[ ! -f "$IMPORTER_SCRIPT" ]]; then
   echo "Error: importer script not found at: $IMPORTER_SCRIPT"
   echo "Set IMPORTER_SCRIPT in .env or rename your script to health_data_importer.py in $PROJECT_ROOT."
@@ -62,7 +58,7 @@ if ! command -v "$PYTHON_BIN_GLOBAL" >/dev/null 2>&1; then
   exit 1
 fi
 
-# Make sure required PG vars exist
+# verify PG vars exist
 REQUIRED_ENV_VARS=(SQLITE_DB_PATH LOG_FILE PGHOST PGPORT PGDATABASE PGUSER PGPASSWORD)
 MISSING=()
 for var in "${REQUIRED_ENV_VARS[@]}"; do
@@ -79,7 +75,7 @@ if (( ${#MISSING[@]} > 0 )); then
   exit 1
 fi
 
-# ----- Virtualenv -----
+# venv 
 
 if [[ ! -d "$VENV_DIR" ]]; then
   echo "Creating virtual environment in $VENV_DIR"
@@ -95,11 +91,11 @@ echo "Ensuring pip is available in the virtual environment..."
 "$VENV_PYTHON" -m ensurepip --upgrade || true
 "$VENV_PIP" install --upgrade pip
 
-# ----- Python deps in venv -----
+# deps in venv
 
 PYTHON_PACKAGES=(pandas openpyxl psycopg2-binary)
 if [[ -n "${EXTRA_PIP_PACKAGES:-}" ]]; then
-  # Split EXTRA_PIP_PACKAGES into an array (space-separated)
+  # split EXTRA_PIP_PACKAGES into an array (space-separated)
   read -r -a EXTRA_ARRAY <<< "$EXTRA_PIP_PACKAGES"
   PYTHON_PACKAGES+=("${EXTRA_ARRAY[@]}")
 fi
@@ -107,7 +103,7 @@ fi
 echo "Installing Python packages into venv: ${PYTHON_PACKAGES[*]}"
 "$VENV_PIP" install "${PYTHON_PACKAGES[@]}"
 
-# ----- OS deps (apt, if available) -----
+# OS deps
 
 APT_PACKAGES=(postgresql-client pgloader)
 if command -v apt-get >/dev/null 2>&1; then
@@ -118,7 +114,7 @@ else
   echo "apt-get not found, skipping OS packages: ${APT_PACKAGES[*]}"
 fi
 
-# ----- Test PostgreSQL connection using psycopg2 in venv -----
+# test PostgreSQL con w/ psycopg2
 
 echo "Testing PostgreSQL connection using psycopg2 and .env settings..."
 "$VENV_PYTHON" - << 'EOF'
@@ -149,7 +145,7 @@ except Exception as e:
     sys.exit(1)
 EOF
 
-# ----- systemd service + timer -----
+# systemd service + timer
 
 SERVICE_FILE_PATH="$SYSTEMD_DIR/${SERVICE_NAME}.service"
 TIMER_FILE_PATH="$SYSTEMD_DIR/${TIMER_NAME}.timer"

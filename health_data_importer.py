@@ -5,10 +5,8 @@ from psycopg2 import sql
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Load .env file if present
 load_dotenv()
 
-# REQUIRED ENV VARS
 REQUIRED_ENV_VARS = [
     "SQLITE_DB_PATH",
     "LOG_FILE",
@@ -19,7 +17,7 @@ REQUIRED_ENV_VARS = [
     "PGPASSWORD",
 ]
 
-# DEFAULT TABLES (can be overridden via TABLES_TO_IMPORT env var)
+# DEFAULT TABLES
 DEFAULT_TABLES = {
     "steps_record_table",
     "body_fat_record_table",
