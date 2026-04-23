@@ -33,3 +33,6 @@ full_import_log.txt
 *.swp
 *~
 .DS_Store
+
+Health Connect.zip
+*.zip
